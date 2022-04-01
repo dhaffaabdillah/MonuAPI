@@ -2,7 +2,10 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\GuruMiddleware;
 use App\Http\Middleware\RestrictRegistrationToOneAdmin;
+use App\Http\Middleware\SiswaMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -65,5 +68,8 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'restrictothers' => RestrictRegistrationToOneAdmin::class,
+        'Siswa' => SiswaMiddleware::class,
+        'Guru' => GuruMiddleware::class,
+        'Admin' => AdminMiddleware::class,
     ];
 }
