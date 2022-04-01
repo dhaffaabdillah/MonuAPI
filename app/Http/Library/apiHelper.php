@@ -33,4 +33,12 @@ trait apiHelper
             'nisn' => ['string', 'unique:users'],
         ];
     }
+
+    protected function subjectValidatedRules(): array
+    {
+        return [
+            'subject_name' => ['required', 'string', 'max:255', 'unique:subjects'],
+            'details' => ['required', 'string', 'max:255'],
+        ];
+    }
 }
