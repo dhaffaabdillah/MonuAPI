@@ -41,4 +41,12 @@ trait apiHelper
             'details' => ['required', 'string', 'max:255'],
         ];
     }
+
+    protected function teacherValidatedRules(): array
+    {
+        return [
+            'user_id' => ['required', 'integer', 'max:255', 'unique:teachers'],
+            'nip' => ['string', 'max:255', 'unique:teachers'],
+        ];
+    }
 }

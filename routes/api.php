@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\SubjectController;
+use App\Http\Controllers\API\TeacherController;
 use App\Http\Controllers\API\TeacherSubjectController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
@@ -34,8 +35,10 @@ Route::prefix('v1')->group(function() {
         Route::post('register', [AuthController::class, 'register']);
         
         Route::group(['middleware' => 'auth:sanctum'], function() {
-            Route::resource('subject', SubjectController::class)->middleware('Admin');
-            Route::resource('teacher-subjects', TeacherSubjectController::class)->middleware('Admin');
+            Route::resource('subject', SubjectController::class);
+            Route::resource('teachers', TeacherController::class);
+            Route::get('user-with-teacher-role', [TeacherController::class, 'getDataUserOnlyTeacher']);
+            Route::resource('teacher-subjects', TeacherSubjectController::class);
             Route::post('logout', [AuthController::class, 'logout']);
             Route::post('logout-all', [AuthController::class, 'logoutAll']);
         });

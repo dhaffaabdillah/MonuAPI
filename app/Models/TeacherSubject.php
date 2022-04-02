@@ -16,6 +16,16 @@ class TeacherSubject extends Model
     ];
 
     public $timestamps = true;
-    
+
+    public function subjects()
+    {
+        return $this->hasMany(Subject::class);
+    }
+
+
+    public function teachers()
+    {
+        return $this->hasMany(Teacher::class);
+    }
     
 }
