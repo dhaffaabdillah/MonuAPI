@@ -3,19 +3,29 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Library\apiHelper;
 use App\Models\Exam;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class ExamController extends Controller
 {
+    use apiHelper;
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+        $this->middleware('Admin')->except('');
+    }
     public function index()
     {
-        //
+        $data = Exam::paginate(15);
+        return $this->onSuccess($data, 200);
     }
 
     /**
@@ -36,27 +46,54 @@ class ExamController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $session = $request->user();
+        if ($session) {
+            $validator = Validator::make($request->all(), $this->examValidatedRules());
+            if ($validator->passes()) {
+                $exam =  Exam::create([
+                    'teacher_id' => $request->teacher_id,
+                    'subject_id' => $request->subject_id,
+                    'exam_name' => $request->exam_name,
+                    'total_question' => $request->total_question,
+                    'type_question' => $request->type_question, // random atau berurutan
+                    'duration' => $request->duration, // in minutes
+                    'start_time' => $request->start_time, // in timestamps
+                    'end_time' => $request->end_time, // in timestamos 
+                    'tokens' => $request->tokens
+                ]);
+
+                return $this->onSuccess($exam, 'Exam created');
+            }
+            return $this->onError(400, $validator->errors());
+        }
+        return $this->onError(401, 'Unauthorized!');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Exam  $exam
+     * @param  \App\Models\Subject  $subject
      * @return \Illuminate\Http\Response
      */
-    public function show(Exam $exam)
+    public function show($id)
     {
-        //
+        if(Auth::check()) {
+            $data = Exam::findOrFail($id);
+            if (!$data) {
+                return $this->onError(404, 'exam not found');
+            }
+            return $this->onSuccess($data, 'exam found');
+        }
+        return $this->onError(401, 'Unauthorized');
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Exam  $exam
+     * @param  \App\Models\exam  $exam
      * @return \Illuminate\Http\Response
      */
-    public function edit(Exam $exam)
+    public function edit($id)
     {
         //
     }
@@ -65,22 +102,50 @@ class ExamController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Exam  $exam
+     * @param  \App\Models\exam  $exam
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Exam $exam)
+    public function update(Request $request, $id)
     {
-        //
+        if (Auth::check()) {
+            $validator = Validator::make($request->all(), $this->examValidatedRules());
+            if ($validator->passes()) {
+                $exam =  Exam::find($id);
+                $exam->teacher_id = $request->teacher_id;
+                $exam->subject_id = $request->subject_id;
+                $exam->exam_name = $request->exam_name;
+                $exam->total_question = $request->total_question;
+                $exam->details = $request->details;
+                $exam->duration = $request->duration;
+                $exam->type_question = $request->type_question;
+                $exam->tokens = $request->tokens;
+                $exam->start_time = $request->start_time;
+                $exam->end_time= $request->end_time;
+                $exam->update();
+                return $this->onSuccess($exam, 'Exam updated');
+            }
+            return $this->onError(400, $validator->errors());
+        }
+        return $this->onError(401, 'Unauthorized');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Exam  $exam
+     * @param  \App\Models\exam  $exam
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Exam $exam)
+    public function destroy($id)
     {
-        //
+        $user = Auth::user();
+        if ($user->role == 3) {
+            $exam = Exam::find($id); // Find the id of the exam passed
+            $exam->delete(); // Delete the specific exam data
+            if (!empty($exam)) {
+                return $this->onSuccess($exam, 'exam Deleted');
+            }
+            return $this->onError(404, 'exam Not Found');
+        }
+        return $this->onError(401, 'Unauthorized Access');
     }
 }

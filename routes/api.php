@@ -1,10 +1,14 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\ExamController;
+use App\Http\Controllers\API\ExamPackagesController;
+use App\Http\Controllers\API\QuestionController;
 use App\Http\Controllers\API\SubjectController;
 use App\Http\Controllers\API\TeacherController;
 use App\Http\Controllers\API\TeacherSubjectController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Middleware\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +41,9 @@ Route::prefix('v1')->group(function() {
         Route::group(['middleware' => 'auth:sanctum'], function() {
             Route::resource('subject', SubjectController::class);
             Route::resource('teachers', TeacherController::class);
+            Route::resource('exams', ExamController::class);
+            Route::resource('exam-packages', ExamPackagesController::class);
+            Route::resource('questions',  QuestionController::class);
             Route::get('user-with-teacher-role', [TeacherController::class, 'getDataUserOnlyTeacher']);
             Route::resource('teacher-subjects', TeacherSubjectController::class);
             Route::post('logout', [AuthController::class, 'logout']);

@@ -49,4 +49,20 @@ trait apiHelper
             'nip' => ['string', 'max:255', 'unique:teachers'],
         ];
     }
+
+    protected function examValidatedRules(): array
+    {
+        return [
+            'teacher_id' => ['required', 'integer', 'max:255'],
+            'subject_id' => ['required', 'string'],
+            'exam_name' => ['required', 'string'],
+            'total_question' => ['required', 'string'],
+            'duration' =>  ['required', 'integer'],
+            'type_question' =>  ['required', 'string'],
+            'detail' =>  ['string'],
+            'start_time' =>  ['date_format:date', 'required'],
+            'end_time' =>  ['date_format:date', 'required'],
+            'tokens' =>  ['required'],
+        ];
+    }
 }
