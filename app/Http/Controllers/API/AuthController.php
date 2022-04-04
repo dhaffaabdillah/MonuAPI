@@ -45,7 +45,9 @@ class AuthController extends Controller
             $respon = [
                 'success' => false,
                 'msg' => 'Validator error',
-                'errors' => $validate->errors(),
+                'errors' => [
+                    $validate->errors()
+                ],
                 'content' => null,
             ];
             return response()->json($respon, 200);
@@ -73,9 +75,11 @@ class AuthController extends Controller
                 'msg' => 'Login successfully',
                 'errors' => null,
                 'content' => [
-                    'status_code' => 200,
-                    'access_token' => $tokenResult,
-                    'token_type' => 'Bearer',
+                    [
+                        'status_code' => 200,
+                        'access_token' => $tokenResult,
+                        'token_type' => 'Bearer',
+                    ]
                 ]
             ];
             return response()->json($respon, 200);
@@ -110,7 +114,7 @@ class AuthController extends Controller
         } else {
             return response()->json(['message' => 'Access denied due the roles doesnt allowed'], 401);
         }
-        
+
     }
 
     public function forgotPassword(Request $request)
@@ -141,7 +145,7 @@ class AuthController extends Controller
 
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
-            function($user) use ($request) 
+            function($user) use ($request)
             {
                 $user->forceFill([
                     'password' => Hash::make($request->password),
