@@ -23,15 +23,15 @@ class UserController extends Controller
         $this->middleware('auth:sanctum');
     }
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $user = User::paginate();
+        $user = User::with('role')->paginate($request->get('limit'));
         $response = [
             'success' => true,
             'data' => $user,
         ];
-
-        return response()->json($response, 200);
+        dd($user);
+        // return response()->json($response, 200);
     }
 
     /**

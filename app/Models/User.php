@@ -46,6 +46,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'role_id', 'id');
+    }
+
     public function sendPasswordResetNotification($token)
     {
         $url = env('APP_URL').":8000"."/api/v1/auth/reset-password?token=".$token;

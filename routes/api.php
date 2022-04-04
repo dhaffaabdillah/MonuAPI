@@ -31,7 +31,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Auth::routes();
 Route::prefix('v1')->group(function() {
-    Route::resource('user', UserController::class)->middleware('auth:sanctum');
+    Route::apiResource('user', UserController::class)->middleware('auth:sanctum');
     
     Route::group(['prefix' => 'auth'], function(){
         Route::post('login', [AuthController::class, 'login']);
@@ -40,17 +40,24 @@ Route::prefix('v1')->group(function() {
         Route::post('reset-password', [AuthController::class, 'resetPassword']);
     });
 
+    // aku ingin punya porsche 911 gt3 rs
     Route::group(['middleware' => 'auth:sanctum'], function() {
-        Route::get('/search-user{user?}', [UserController::class, 'search']);
-        Route::resource('subject', SubjectController::class);
-        Route::resource('teachers', TeacherController::class);
-        Route::resource('exams', ExamController::class);
-        Route::resource('exam-packages', ExamPackagesController::class);
-        Route::resource('questions',  QuestionController::class);
-        Route::get('user-with-teacher-role', [TeacherController::class, 'getDataUserOnlyTeacher']);
-        Route::resource('teacher-subjects', TeacherSubjectController::class);
+        Route::apiResource('subject', SubjectController::class);
+        Route::apiResource('teachers', TeacherController::class);
+        Route::apiResource('exams', ExamController::class);
+        Route::apiResource('exam-packages', ExamPackagesController::class);
+        Route::apiResource('questions',  QuestionController::class);
+        Route::apiResource('teacher-subjects', TeacherSubjectController::class);
+        // logout function
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('logout-all', [AuthController::class, 'logoutAll'])->middleware('Admin');
+
+        // for pagination or searching
+        Route::get('/user{user?}', [UserController::class,'index']);
+        Route::get('/search-user{user?}', [UserController::class, 'search']);
+
+        // code to need refactor LOL
+        Route::get('user-with-teacher-role', [TeacherController::class, 'getDataUserOnlyTeacher']);
     });
     
 

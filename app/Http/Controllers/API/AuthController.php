@@ -26,13 +26,24 @@ class AuthController extends Controller
             'password' => 'string|required|max:8|confirmed'
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        return response()->json(['msg' => 'Registration successful!', 'response' => $user], 200);
+        if ($validate->fails()) {
+            $respon = [
+                'success' => false,
+                'msg' => 'Validator error',
+                'errors' => [
+                    $validate->errors()
+                ],
+                'content' => null,
+            ];
+            return response()->json($respon, 200);
+        } else  {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+            return response()->json(['msg' => 'Registration successful!', 'response' => $user], 200);
+        }
     }
 
     public function login(Request $request) {
