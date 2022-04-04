@@ -129,7 +129,7 @@ class SubjectController extends Controller
             if (!empty($subject)) {
                 return $this->onSuccess($subject, 'Subject Deleted');
             }
-            return $this->onError(404, 'User Not Found');
+            return $this->onError(404, 'Subject Not Found');
         }
         return $this->onError(401, 'Unauthorized Access');
     }

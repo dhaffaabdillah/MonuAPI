@@ -149,4 +149,23 @@ class UserController extends Controller
         }
         return $this->onError(401, 'Unauthorized Access');
     }
+
+    public function search(Request $request)
+    {
+        $name = $request->get('name');
+        $email = $request->get('email');
+        $role = $request->get('role');
+        if (Auth::check()) {
+            $user = User::where('name', 'like', "%{$name}%")
+                 ->orWhere('email', 'like', "%{$email}%")
+                //  ->orWhere('role', 'like', "%{$role}%")
+                 ->get();
+            if (!$user) {
+                return $this->onError(404, 'Not found');
+            }
+            return $this->onSuccess([$user], 200);
+        }
+        
+        return $this->onError(401, 'Unauthorized');
+    }
 }

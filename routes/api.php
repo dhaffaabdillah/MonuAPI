@@ -32,6 +32,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Auth::routes();
 Route::prefix('v1')->group(function() {
     Route::resource('user', UserController::class)->middleware('auth:sanctum');
+    
     Route::group(['prefix' => 'auth'], function(){
         Route::post('login', [AuthController::class, 'login']);
         Route::post('register', [AuthController::class, 'register']);
@@ -40,6 +41,7 @@ Route::prefix('v1')->group(function() {
     });
 
     Route::group(['middleware' => 'auth:sanctum'], function() {
+        Route::get('/search-user{user?}', [UserController::class, 'search']);
         Route::resource('subject', SubjectController::class);
         Route::resource('teachers', TeacherController::class);
         Route::resource('exams', ExamController::class);
@@ -48,7 +50,7 @@ Route::prefix('v1')->group(function() {
         Route::get('user-with-teacher-role', [TeacherController::class, 'getDataUserOnlyTeacher']);
         Route::resource('teacher-subjects', TeacherSubjectController::class);
         Route::post('logout', [AuthController::class, 'logout']);
-        Route::post('logout-all', [AuthController::class, 'logoutAll']);
+        Route::post('logout-all', [AuthController::class, 'logoutAll'])->middleware('Admin');
     });
     
 
