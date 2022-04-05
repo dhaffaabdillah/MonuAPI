@@ -42,8 +42,9 @@ Route::prefix('v1')->group(function() {
 
     // aku ingin punya porsche 911 gt3 rs
     Route::group(['middleware' => 'auth:sanctum'], function() {
+        Route::get('/profile', [AuthController::class, 'getCurrentSession']);
         Route::apiResource('subject', SubjectController::class);
-        Route::apiResource('teachers', TeacherController::class);
+        Route::apiResource('teacher', TeacherController::class);
         Route::apiResource('exams', ExamController::class);
         Route::apiResource('exam-packages', ExamPackagesController::class);
         Route::apiResource('questions',  QuestionController::class);

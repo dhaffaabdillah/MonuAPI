@@ -37,7 +37,7 @@ trait apiHelper
     protected function subjectValidatedRules(): array
     {
         return [
-            'subject_name' => ['required', 'string', 'max:255', 'unique:subjects'],
+            'subject_name' => ['required', 'string', 'max:255'],
             'details' => ['required', 'string', 'max:255'],
         ];
     }

@@ -176,4 +176,9 @@ class AuthController extends Controller
         return response(['message' => __($status)], 500);
     }
 
+    public function getCurrentSession()
+    {
+        return response()->json(Auth::user(), 200);
+    }
+
 }

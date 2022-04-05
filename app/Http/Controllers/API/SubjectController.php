@@ -28,6 +28,20 @@ class SubjectController extends Controller
         return $this->onSuccess($data, 200);
     }
 
+    public function search(Request $request)
+    {
+        $name = $request->get('name');
+        if (Auth::check()) {
+            $data = Subject::where('subject_name', 'like', "%{$name}%")->get();
+            if (!$data) {
+                return $this->onError(404, 'Not found');
+            }
+            return $this->onSuccess([$data], 200);
+        }
+        
+        return $this->onError(401, 'Unauthorized');
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -98,14 +112,14 @@ class SubjectController extends Controller
      * @param  \App\Models\Subject  $subject
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Subject $subject, $id)
+    public function update(Request $request, $id)
     {
         if (Auth::check()) {
             $validator = Validator::make($request->all(), $this->subjectValidatedRules());
             if ($validator->passes()) {
-                $subject =  Subject::find($id);
+                $subject =  Subject::findOrFail($id);
                 $subject->subject_name = $request->subject_name;
-                $subject->detail = $request->detail;
+                $subject->details = $request->details;
                 $subject->update();
                 return $this->onSuccess($subject, 'User updated');
             }

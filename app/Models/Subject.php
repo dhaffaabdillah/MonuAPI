@@ -14,7 +14,7 @@ class Subject extends Model
         'subject_name', 'details'    
     ];
     
-    protected $timestamps = [
+    public $timestamps = [
         'created_at', 'updated_at', 'deleted_at'
     ];
 
