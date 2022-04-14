@@ -118,9 +118,17 @@ class UserController extends Controller
             if ($validator->fails()) {
                 return $this->onError(400, $validator->errors()->all()[0]);
             } else {
+                $user = User::findOrFail($id);
+                $user->name = $request->name;
+                $user->email = $request->email;
+                $user->role = $request->role;
+                $user->status = $request->status;
+                $user->update();
 
+                return $this->onSuccess($user,'Data Updated' ,200);
             }
         }
+        return $this->onError(400, 'Unauthenticated');
     }
 
     public function updateProfileBySession(Request $request) 
