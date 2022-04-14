@@ -22,9 +22,9 @@ class ExamController extends Controller
         $this->middleware('auth:sanctum');
         $this->middleware('Admin')->except('');
     }
-    public function index()
+    public function index(Request $request)
     {
-        $data = Exam::paginate(15);
+        $data = Exam::paginate($request->get('limit'));
         return $this->onSuccess($data, 200);
     }
 
@@ -49,7 +49,9 @@ class ExamController extends Controller
         $session = $request->user();
         if ($session) {
             $validator = Validator::make($request->all(), $this->examValidatedRules());
-            if ($validator->passes()) {
+            if ($validator->fails()) {
+                return $this->onError(400, $validator->errors());
+            } else {
                 $exam =  Exam::create([
                     'teacher_id' => $request->teacher_id,
                     'subject_id' => $request->subject_id,
@@ -109,8 +111,11 @@ class ExamController extends Controller
     {
         if (Auth::check()) {
             $validator = Validator::make($request->all(), $this->examValidatedRules());
-            if ($validator->passes()) {
-                $exam =  Exam::find($id);
+            if ($validator->fails()) {
+                return $this->onError(400, $validator->errors());
+                
+            } else {
+                $exam =  Exam::findOrFail($id);
                 $exam->teacher_id = $request->teacher_id;
                 $exam->subject_id = $request->subject_id;
                 $exam->exam_name = $request->exam_name;

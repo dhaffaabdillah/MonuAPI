@@ -25,6 +25,7 @@ class User extends Authenticatable
         'password',
         'status',
         'role',
+        // 'profile_picture'
     ];
 
     /**
@@ -48,7 +49,7 @@ class User extends Authenticatable
 
     public function role()
     {
-        return $this->belongsTo(Role::class, 'role_id', 'id');
+        return $this->belongsTo(Role::class, 'role', 'id');
     }
 
     public function sendPasswordResetNotification($token)

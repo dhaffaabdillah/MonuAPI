@@ -4,12 +4,14 @@ namespace App\Http\Controllers\API;
 use App\Http\Library\apiHelper;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Str;
 class UserController extends Controller
 {
     use apiHelper;
@@ -111,23 +113,43 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $session = Auth::user();
-        if (in_array($session->role, [2, 3])) {
+        if (Auth::check()) {
             $validator = Validator::make($request->all(), $this->userValidatedRules());
-            if ($validator->passes()) {
-                $user =  User::find($id);
+            if ($validator->fails()) {
+                return $this->onError(400, $validator->errors()->all()[0]);
+            } else {
+
+            }
+        }
+    }
+
+    public function updateProfileBySession(Request $request) 
+    {
+        $image  = $request->file('profile_picture');
+        if (Auth::check()) {
+            $validator = Validator::make($request->all(), $this->userUpdateValidatedRules());
+            if ($validator->fails()) {
+                return $this->onError(400, $validator->errors()->all()[0]);
+            } else {
+                $user = User::findOrFail($request->user()->id);
                 $user->name = $request->name;
                 $user->email = $request->email;
-                $user->role = $request->role;
-                $user->password = $request->password;
                 $user->nis = $request->nis;
                 $user->nisn = $request->nisn;
+                if ($image && $image->isValid()) {
+                    $file_name = time()."_".Carbon::now()->format('d-M-Y')."_".Str::slug($request->user()->name).$image->getClientOriginalName();
+                    // if($user->profile_picture != $file_name){
+                    //     unlink(getcwd().$user->profile_picture);
+                    // }
+                    $path = "/images/profile-pictures/$file_name";
+                    $image->move('img/profile-picture', $file_name);
+                    $user->profile_picture = $path;
+                }
                 $user->update();
-                return $this->onSuccess($user, 'User updated');
+                return $this->onSuccess($user,'Data Updated', 200);
             }
-            return $this->onError(400, $validator->errors());
         }
-        return $this->onError(401, 'Unauthorized!');
+        return $this->onError(401, 'Unauthenticated');
     }
 
     /**

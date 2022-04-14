@@ -31,7 +31,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Auth::routes();
 Route::prefix('v1')->group(function() {
-    Route::apiResource('user', UserController::class)->middleware('auth:sanctum');
+    Route::apiResource('user', UserController::class)->middleware('auth:sanctum')->except(['except']);
+    Route::patch('user/{id}', [UserController::class, 'updateProfileByAdmin'])->middleware('auth:sanctum');
+    Route::post('user/update-profile', [UserController::class, 'updateProfileBySession'])->middleware('auth:sanctum');
     
     Route::group(['prefix' => 'auth'], function(){
         Route::post('login', [AuthController::class, 'login']);
@@ -43,12 +45,12 @@ Route::prefix('v1')->group(function() {
     // aku ingin punya porsche 911 gt3 rs
     Route::group(['middleware' => 'auth:sanctum'], function() {
         Route::get('/profile', [AuthController::class, 'getCurrentSession']);
-        Route::apiResource('subject', SubjectController::class);
-        Route::apiResource('teacher', TeacherController::class);
-        Route::apiResource('exams', ExamController::class);
-        Route::apiResource('exam-packages', ExamPackagesController::class);
-        Route::apiResource('questions',  QuestionController::class);
-        Route::apiResource('teacher-subjects', TeacherSubjectController::class);
+        Route::apiResource('subject', SubjectController::class)->except(['update']);
+        Route::apiResource('teacher', TeacherController::class)->except(['update']);
+        Route::apiResource('exam', ExamController::class)->except(['update']);
+        Route::apiResource('exam-package', ExamPackagesController::class)->except(['update']);
+        Route::apiResource('question',  QuestionController::class)->except(['update']);
+        Route::apiResource('teacher-subject', TeacherSubjectController::class)->except(['update']);
         // logout function
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('logout-all', [AuthController::class, 'logoutAll'])->middleware('Admin');
