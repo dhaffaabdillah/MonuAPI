@@ -55,15 +55,14 @@ class QuestionController extends Controller
                     // if($user->profile_picture != $file_name){
                     //     unlink(getcwd().$user->profile_picture);
                     // }
-                    $path = "/images/profile-pictures/$file_name";
+                    $path = "/file/question-file/$file_name";
                     $file->move('question-file/', $file_name);
-                    $data->files = $path;
                 }
                 $question = Question::create([
                     'teacher_id' => $request->teacher_id,
                     'subject_id' => $request->subject_id,
                     'file_type' => $request->file_type->getClientMimeType(),
-                    'files' => $request->files,
+                    'files' => $path,
                     'question' => $request->question,
                     'option_a' => $request->option_a,
                     'option_b' => $request->option_b,

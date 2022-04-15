@@ -8,6 +8,7 @@ use App\Models\Exam;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class ExamController extends Controller
 {
@@ -61,7 +62,7 @@ class ExamController extends Controller
                     'duration' => $request->duration, // in minutes
                     'start_time' => $request->start_time, // in timestamps
                     'end_time' => $request->end_time, // in timestamos 
-                    'tokens' => $request->tokens
+                    'tokens' => Str::random(5),
                 ]);
 
                 return $this->onSuccess($exam, 'Exam created');
@@ -123,7 +124,7 @@ class ExamController extends Controller
                 $exam->details = $request->details;
                 $exam->duration = $request->duration;
                 $exam->type_question = $request->type_question;
-                $exam->tokens = $request->tokens;
+                $exam->tokens = Str::random(5);
                 $exam->start_time = $request->start_time;
                 $exam->end_time= $request->end_time;
                 $exam->update();
