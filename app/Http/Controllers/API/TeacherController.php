@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Library\apiHelper;
 use App\Models\Teacher;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Auth;
@@ -19,10 +20,10 @@ class TeacherController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
-        $data = Teacher::all();
-        return $this->onSuccess($data, 200);
+        $data = Teacher::with(['user'])->paginate($request->get('limit'));
+        return $this->onSuccess([$data], 200);
     }
 
     /**
@@ -47,20 +48,25 @@ class TeacherController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $session = $request->user();
         $user_id = User::select('id');
         if ($session) {
             $validator = Validator::make($request->all(), $this->teacherValidatedRules());
-            if ($validator->passes()) {
+            if (!$validator->fails()) {
                 $teacher =  Teacher::create([
                     'user_id' => $request->user_id,
-                    'teacher_name' => User::select('name')->where('role', 2)->where('id', $user_id)->get(),
+                    'teacher_name' => User::select('name')->where(
+                        [['id', "=",$request->user_id]],
+                        // ['role', "=", 2]
+                        )->first()->name,
+
+                    // 'teacher_name' => User::select('name')->where('id', $request->user_id)->first(),
                     'nip' => $request->nip,
                 ]);
 
-                return $this->onSuccess($teacher, 'tea$teacher created');
+                return $this->onSuccess([$teacher], 'teacher created');
             }
             return $this->onError(400, $validator->errors());
         }
@@ -97,18 +103,41 @@ class TeacherController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Teacher $teachers, $id)
     {
         if (Auth::check()) {
             $validator = Validator::make($request->all(), $this->teacherValidatedRules());
-            if ($validator->passes()) {
-                $teacher =  Teacher::find($id);
-                $teacher->teacher_name = $request->teacher_name;
-                $teacher->nip = $request->nip;
-                $teacher->update();
-                return $this->onSuccess($teacher, 'User updated');
+            if (!$validator->fails()) {
+                if(User::select('id')->where('role', 3)->get() === $request->user_id){
+                    $teacher =  Teacher::findOrFail($id);
+                    $teacher->user_id = $request->user_id;
+                    $teacher->teacher_name = User::select('name')->where(
+                        [['id', "=",$request->user_id]],
+                        )->first()->name;
+                    $teacher->nip = $request->nip;
+                    $teacher->update();
+                    return $this->onSuccess($teacher, 'Teacher updated');
+                }
+                return $this->onError(404, 'Teacher not found');
+                
             }
             return $this->onError(400, $validator->errors());
+        }
+        return $this->onError(401, 'Unauthorized');
+    }
+
+    public function updates(Request $request, Teacher $teacher, $id)
+    {
+        if (Auth::user()->role == 3 && Auth::check()) {
+            $teachers = Teacher::find($teacher)->update([
+                'user_id' => $request->user_id,
+                'teacher_name' => User::select('name')->where(
+                    [['id', "=",$request->user_id]]
+                    )->first()->name,
+                'nip'       => $request->nip,
+            ]);
+
+            return $this->onSuccess($teachers, 'Data Success', 200);
         }
         return $this->onError(401, 'Unauthorized');
     }
@@ -123,10 +152,11 @@ class TeacherController extends Controller
     {
         $user = Auth::user();
         if ($user->role == 3) {
-            $teacher = Teacher::find($id); // Find the id of the tea$teacher passed
+            // $teacher = Teacher::findOrFail($id); // Find the id of the tea$teacher passed
+            $teacher = Teacher::where('id', $id);
             $teacher->delete(); // Delete the specific tea$teacher data
             if (!empty($teacher)) {
-                return $this->onSuccess($teacher, 'tea$teacher Deleted');
+                return $this->onSuccess($teacher, 'Teacher Deleted');
             }
             return $this->onError(404, 'User Not Found');
         }

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Question extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $table = 'questions';
+    protected $table = 'questions_cognitive';
     protected $fillable = [
         'teacher_id', 'subject_id', 'file_type', 'files', 'question', 'option_a', 'option_b', 'option_c', 'option_d', 'option_e', 'correct_answer', 'total_correct', 'total_wrong'
     ];
@@ -22,6 +22,6 @@ class Question extends Model
 
     public function subject()
     {
-        return $this->belongsTo(subject::class, 'subject_ideqc', 'id');
+        return $this->belongsTo(Subject::class, 'subject_id', 'id');
     }
 }

@@ -23,7 +23,10 @@ class AuthController extends Controller
         $validate = Validator::make($request->all(), [
             'name' => 'string|required',
             'email' => 'string|required|email|unique:users',
-            'password' => 'string|required|min:8|confirmed'
+            'gender' => 'string|required',
+            'class' => 'string|required',
+            'nik' => 'integer|required',
+            'password' => 'string|required|min:8|confirmed',
         ]);
 
         if ($validate->fails()) {
@@ -41,6 +44,9 @@ class AuthController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
+                'class' => $request->class,
+                'nik' => $request->nik,
+                'gender' => $request->gender,
             ]);
             return response()->json(['msg' => 'Registration successful!', 'response' => $user], 200);
         }

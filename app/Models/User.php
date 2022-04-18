@@ -53,6 +53,11 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class, 'role', 'id');
     }
 
+    public function teacher()
+    {
+        return $this->hasOne(Teacher::class, 'user_id', 'id');
+    }
+
     public function sendPasswordResetNotification($token)
     {
         $url = env('APP_URL').":8000"."/api/v1/auth/reset-password?token=".$token;

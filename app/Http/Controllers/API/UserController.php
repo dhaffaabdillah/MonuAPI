@@ -32,8 +32,8 @@ class UserController extends Controller
             'success' => true,
             'data' => $user,
         ];
-        dd($user);
-        // return response()->json($response, 200);
+        // dd($user);
+        return response()->json($response, 200);
     }
 
     /**
@@ -57,14 +57,18 @@ class UserController extends Controller
         $session = $request->user();
         if ($session->role === 2 || $session->role === 3) {
             $validator = Validator::make($request->all(), $this->userValidatedRules());
-            if ($validator->passes()) {
+            if (!$validator->fails()) {
                 $user =  User::create([
                     'name' => $request->name,
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
                     'nis' => $request->nis,
                     'nisn' => $request->nisn,
-                    'role' => $request->role
+                    'role' => $request->role,
+                    'status' => $request->status,
+                    'nik' => $request->nik,
+                    'class' => $request->class,
+                    'gender' => $request->gender,
                 ]);
 
                 return $this->onSuccess($user, 'User created');
@@ -111,7 +115,7 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): JsonResponse
     {
         if (Auth::check()) {
             $validator = Validator::make($request->all(), $this->userValidatedRules());
@@ -123,6 +127,11 @@ class UserController extends Controller
                 $user->email = $request->email;
                 $user->role = $request->role;
                 $user->status = $request->status;
+                $user->nisn = $request->nisn;
+                $user->nis = $request->nis;
+                $user->nik = $request->nik;
+                $user->class = $request->class;
+                $user->gender = $request->gender;
                 $user->update();
 
                 return $this->onSuccess($user,'Data Updated' ,200);
@@ -131,7 +140,7 @@ class UserController extends Controller
         return $this->onError(400, 'Unauthenticated');
     }
 
-    public function updateProfileBySession(Request $request) 
+    public function updateProfileBySession(Request $request): JsonResponse
     {
         $image  = $request->file('profile_picture');
         if (Auth::check()) {
@@ -144,6 +153,9 @@ class UserController extends Controller
                 $user->email = $request->email;
                 $user->nis = $request->nis;
                 $user->nisn = $request->nisn;
+                $user->nik = $request->nik;
+                $user->class = $request->class;
+                $user->gender = $request->gender;
                 if ($image && $image->isValid()) {
                     $file_name = time()."_".Carbon::now()->format('d-M-Y')."_".Str::slug($request->user()->name).$image->getClientOriginalName();
                     // if($user->profile_picture != $file_name){
@@ -166,7 +178,7 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id): JsonResponse
     {
         $user = Auth::user();
         if ($user->role == 3) {
@@ -180,7 +192,7 @@ class UserController extends Controller
         return $this->onError(401, 'Unauthorized Access');
     }
 
-    public function search(Request $request)
+    public function search(Request $request): JsonResponse
     {
         $name = $request->get('name');
         $email = $request->get('email');

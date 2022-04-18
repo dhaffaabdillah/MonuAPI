@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\ClassController;
 use App\Http\Controllers\API\ExamController;
 use App\Http\Controllers\API\ExamPackagesController;
 use App\Http\Controllers\API\QuestionController;
@@ -45,12 +46,19 @@ Route::prefix('v1')->group(function() {
     // aku ingin punya porsche 911 gt3 rs
     Route::group(['middleware' => 'auth:sanctum'], function() {
         Route::get('/profile', [AuthController::class, 'getCurrentSession']);
-        Route::apiResource('subject', SubjectController::class)->except(['update']);
-        Route::apiResource('teacher', TeacherController::class)->except(['update']);
-        Route::apiResource('exam', ExamController::class)->except(['update']);
-        Route::apiResource('exam-package', ExamPackagesController::class)->except(['update']);
-        Route::apiResource('question',  QuestionController::class)->except(['update']);
-        Route::apiResource('teacher-subject', TeacherSubjectController::class)->except(['update']);
+        Route::apiResource('subject', SubjectController::class)->except('update');
+        Route::patch('subject/{id}', [SubjectController::class, 'update']);
+        Route::resource('teacher', TeacherController::class)->except('update');
+        Route::post('teacher/{id}', [TeacherController::class, 'update']);
+        Route::apiResource('exam', ExamController::class)->except('update');
+        Route::patch('exam/{id}', [ExamController::class, 'update']);
+        Route::apiResource('exam-package', ExamPackagesController::class)->except('update');
+        Route::patch('exam-package/{id}', [ExamPackagesController::class, 'update']);
+        Route::apiResource('question',  QuestionController::class)->except('update');
+        Route::patch('question/{id}', [QuestionController::class, 'update']);
+        Route::apiResource('teacher-subject', TeacherSubjectController::class)->except('update');
+        Route::patch('teacher-subject/{id}', [TeacherSubjectController::class, 'update']);
+        Route::apiResource('class', ClassController::class);
         // logout function
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('logout-all', [AuthController::class, 'logoutAll'])->middleware('Admin');

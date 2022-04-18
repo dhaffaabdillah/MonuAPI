@@ -19,13 +19,12 @@ class TeacherSubject extends Model
 
     public function subjects()
     {
-        return $this->hasMany(Subject::class);
+        return $this->hasMany(Subject::class, 'subject_id', 'id');
     }
-
 
     public function teachers()
     {
-        return $this->hasMany(Teacher::class);
+        return $this->hasMany(Teacher::class, 'teacher_id', 'id');
     }
     
 }

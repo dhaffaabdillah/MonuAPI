@@ -49,7 +49,7 @@ class TeacherSubjectController extends Controller
         $session = $request->user();
         if ($session) {
             $validator = Validator::make($request->all(), $this->subjectValidatedRules());
-            if ($validator->passes()) {
+            if (!$validator->fails()) {
                 $subject =  TeacherSubject::create([
                     'subject_name' => $request->subject_name,
                     'details' => $request->details,
@@ -71,7 +71,7 @@ class TeacherSubjectController extends Controller
     public function show($id)
     {
         if(Auth::check()) {
-            $data = TeacherSubject::findOrFail($id);
+            $data = TeacherSubject::with(['teacher', 'subject'])->findOrFail($id);
             if (!$data) {
                 return $this->onError(404, 'Subject not found');
             }
@@ -102,7 +102,7 @@ class TeacherSubjectController extends Controller
     {
         if (Auth::check()) {
             $validator = Validator::make($request->all(), $this->subjectValidatedRules());
-            if ($validator->passes()) {
+            if (!$validator->fails()) {
                 $subject =  TeacherSubject::find($id);
                 $subject->subject_name = $request->subject_name;
                 $subject->detail = $request->detail;

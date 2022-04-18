@@ -8,15 +8,17 @@ trait apiHelper
     protected function onSuccess($data, string $message = '', int $code = 200) : JsonResponse
     {
         return response()->json([
+            'success' => true,
             'status' => $code,
             'message' => $message,
             'data' => $data
         ], $code);
     }
 
-    protected function onError(int $code, string $message = ''): JsonResponse
+    protected function onError(int $code, string $message): JsonResponse
     {
         return response()->json([
+            'success' => false,
             'status' => $code,
             'message' => $message,
         ], $code);
@@ -28,6 +30,9 @@ trait apiHelper
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'class' => ['required', 'string'],
+            'gender' => ['required', 'string'],
+            'nik' => ['required', 'number'],
             'role' => ['required', 'string'],
             'nis' => ['string', 'unique:users'],
             'nisn' => ['string', 'unique:users'],
