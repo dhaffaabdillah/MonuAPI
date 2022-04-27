@@ -15,7 +15,7 @@ trait apiHelper
         ], $code);
     }
 
-    protected function onError(int $code, string $message): JsonResponse
+    protected function onError(int $code, $message): JsonResponse
     {
         return response()->json([
             'success' => false,
@@ -32,7 +32,7 @@ trait apiHelper
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'class' => ['required', 'string'],
             'gender' => ['required', 'string'],
-            'nik' => ['required', 'number'],
+            'nik' => ['required', 'integer'],
             'role' => ['required', 'string'],
             'nis' => ['string', 'unique:users'],
             'nisn' => ['string', 'unique:users'],
@@ -56,6 +56,14 @@ trait apiHelper
         return [
             'subject_name' => ['required', 'string', 'max:255'],
             'details' => ['required', 'string', 'max:255'],
+        ];
+    }
+
+    protected function examPackagesValidatedRules(): array
+    {
+        return [
+            'exam_id' => ['required', 'integer'],
+            'question_id' => ['required', 'integer'],
         ];
     }
 

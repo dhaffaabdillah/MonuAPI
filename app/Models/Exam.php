@@ -18,11 +18,11 @@ class Exam extends Model
 
     public function teacher()
     {
-        return $this->belongsToMany(Teacher::class);
+        return $this->belongsToMany(Teacher::class, 'teacher_id', 'id');
     }
 
     public function subject()
     {
-        return $this->belongsToMany(Subject::class);
+        return $this->belongsToMany(Subject::class, 'subject_id', 'id');
     }
 }

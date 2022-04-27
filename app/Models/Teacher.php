@@ -13,7 +13,7 @@ class Teacher extends Model
     protected $fillable = [
         'user_id', 'teacher_name'
     ];
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'id';   
 
     public $timestamps = ['created_at', 'updated_at', 'deleted_at'];
 

@@ -108,7 +108,7 @@ class TeacherController extends Controller
         if (Auth::check()) {
             $validator = Validator::make($request->all(), $this->teacherValidatedRules());
             if (!$validator->fails()) {
-                if(User::select('id')->where('role', 3)->get() === $request->user_id){
+                // if(User::select('id')->where([['role', '=', 3]]) === $request->user_id){
                     $teacher =  Teacher::findOrFail($id);
                     $teacher->user_id = $request->user_id;
                     $teacher->teacher_name = User::select('name')->where(
@@ -117,8 +117,8 @@ class TeacherController extends Controller
                     $teacher->nip = $request->nip;
                     $teacher->update();
                     return $this->onSuccess($teacher, 'Teacher updated');
-                }
-                return $this->onError(404, 'Teacher not found');
+                // }
+                // return $this->onError(404, 'Teacher not found or role doesnt support');
                 
             }
             return $this->onError(400, $validator->errors());
