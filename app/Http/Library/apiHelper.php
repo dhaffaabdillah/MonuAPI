@@ -97,7 +97,7 @@ trait apiHelper
             'teacher_id' => ['required', 'integer', 'max:255'],
             'subject_id' => ['required', 'string'],
             'file_type' => ['string'],
-            'files' => ['nullable', 'mimes:jpg, png, mp3, mp4, gif'],
+            'file'      => ['nullable', 'mimes:jpg, png, mp3, mp4, gif', 'max:8000'],
             'question' => ['required', 'string'],
             'option_a' =>  ['required', 'string'],
             'option_b' =>  ['required', 'string'],

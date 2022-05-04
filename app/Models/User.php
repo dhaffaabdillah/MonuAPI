@@ -26,7 +26,11 @@ class User extends Authenticatable
         'password',
         'status',
         'role',
-        // 'profile_picture'
+        'nisn',
+        'class_number',
+        'nis',
+        'nik',
+        'profile_picture'
     ];
 
     /**

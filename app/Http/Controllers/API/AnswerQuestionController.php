@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Library\apiHelper;
 use App\Models\Answer;
 use App\Models\Exam;
+use App\Models\Question;
 use App\Models\TakeExam;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -40,6 +42,25 @@ class AnswerQuestionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
+    public function saveAnswer(Request $request, $exam_id, $user_id)
+    {
+        if (Auth::check() && Auth::user()->role == 1) {
+            $validator = Validator::make($request->all(), $this->answerQuestionValidatedRules());
+            if (!$validator->fails()) {
+                for ($i=0; $i < ; $i++) { 
+                    # code...
+                }
+                $getQuestion = Question::where([['exam_id', '=', $exam_id]])->get();
+                foreach ($getQuestion as $key => $value) {
+                    $data = Question::create([
+                        'exam_id' => $exam_id
+                    ]);
+                }
+            }
+        }
+    }
+
     public function storeTemporary(Request $request)
     {
         $id_user = Auth::user()->id;

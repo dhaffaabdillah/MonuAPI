@@ -24,8 +24,10 @@ class AuthController extends Controller
             'name' => 'string|required',
             'email' => 'string|required|email|unique:users',
             'gender' => 'string|required',
-            'class' => 'string|required',
+            'class_number' => 'string|required',
             'nik' => 'integer|required',
+            'nis' => 'integer',
+            'nisn' => 'integer',
             'password' => 'string|required|min:8|confirmed',
         ]);
 
@@ -44,8 +46,10 @@ class AuthController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'class' => $request->class,
+                'class_number' => $request->class_number,
                 'nik' => $request->nik,
+                'nis' => $request->nis,
+                'nisn' => $request->nisn,
                 'gender' => $request->gender,
             ]);
             return response()->json(['msg' => 'Registration successful!', 'response' => $user], 200);

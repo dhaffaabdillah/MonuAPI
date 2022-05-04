@@ -53,9 +53,9 @@ class QuestionController extends Controller
         if(in_array($role, [2,3])){
             $validator = Validator::make($request->all(), $this->questionValidatedRules());
             if (!$validator->fails()) {
-                if ($request->hasFile($file)) {
+                if ($request->hasFile($request->hasFile('file'))) {
                     // $filename = Carbon::now()->format('d-m-Y H:i:s')."_".$file->getClientOriginalName();
-                    $file->move('question-files', $file->hashName());
+                    $file->move(base_path(public_path('question-files')), $request->file('file')->hashName());
                 }
                 if(Teacher::find($request->teacher_id) == NULL) {
                     return $this->onError(404, 'Teacher not found');
@@ -68,8 +68,8 @@ class QuestionController extends Controller
                 $question = Question::create([  
                     'teacher_id'    => $role == 3 ? $request->teacher_id : $request->user()->id->where('role', 2),
                     'subject_id'    => $request->subject_id,
-                    'file_type'     => $file->getClientMimeType(),
-                    'file'          => $file->hashName(),
+                    'file_type'     => !$request->hasFile('file') ? NULL : $file->getClientMimeType(),
+                    'file'          => !$request->hasFile('file') ? NULL : $file->hashName(),
                     'question'      => $request->question,
                     'option_a'      => $request->option_a,
                     'option_b'      => $request->option_b,
