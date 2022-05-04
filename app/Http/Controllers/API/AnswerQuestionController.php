@@ -48,9 +48,6 @@ class AnswerQuestionController extends Controller
         if (Auth::check() && Auth::user()->role == 1) {
             $validator = Validator::make($request->all(), $this->answerQuestionValidatedRules());
             if (!$validator->fails()) {
-                for ($i=0; $i < ; $i++) { 
-                    # code...
-                }
                 $getQuestion = Question::where([['exam_id', '=', $exam_id]])->get();
                 foreach ($getQuestion as $key => $value) {
                     $data = Question::create([

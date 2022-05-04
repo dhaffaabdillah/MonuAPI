@@ -33,7 +33,7 @@ class UserController extends Controller
             'data' => $user,
         ];
         // dd($user);
-        return response()->json($response, 200);
+        return response()->json([$response], 200);
     }
 
     /**
@@ -67,11 +67,11 @@ class UserController extends Controller
                     'role' => $request->role,
                     'status' => $request->status,
                     'nik' => $request->nik,
-                    'class' => $request->class,
+                    'class_number' => $request->class_number,
                     'gender' => $request->gender,
                 ]);
 
-                return $this->onSuccess($user, 'User created');
+                return $this->onSuccess([$user], 'User created');
             }
             return $this->onError(400, $validator->errors());
         }
@@ -92,7 +92,7 @@ class UserController extends Controller
             if (!$data) {
                 return $this->onError(404, 'User not found');
             }
-            return $this->onSuccess($data, 'User found');
+            return $this->onSuccess([$data], 'User found');
         }
         return $this->onError(401, 'Unauthorized');
     }
@@ -134,7 +134,7 @@ class UserController extends Controller
                 $user->gender = $request->gender;
                 $user->update();
 
-                return $this->onSuccess($user,'Data Updated' ,200);
+                return $this->onSuccess([$user],'Data Updated' ,200);
             }
         }
         return $this->onError(400, 'Unauthenticated');
@@ -166,7 +166,7 @@ class UserController extends Controller
                     $user->profile_picture = $path;
                 }
                 $user->update();
-                return $this->onSuccess($user,'Data Updated', 200);
+                return $this->onSuccess([$user],'Data Updated', 200);
             }
         }
         return $this->onError(401, 'Unauthenticated');
@@ -185,7 +185,7 @@ class UserController extends Controller
             $user = User::find($id); // Find the id of the user passed
             $user->delete(); // Delete the specific user data
             if (!empty($user)) {
-                return $this->onSuccess($user, 'User Deleted');
+                return $this->onSuccess([$user], 'User Deleted');
             }
             return $this->onError(404, 'User Not Found');
         }
