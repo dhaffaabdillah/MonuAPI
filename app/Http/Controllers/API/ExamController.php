@@ -26,7 +26,7 @@ class ExamController extends Controller
     public function index(Request $request)
     {
         $data = Exam::paginate($request->get('limit'));
-        return $this->onSuccess($data, 200);
+        return $this->onSuccess([$data], 200);
     }
 
     /**
@@ -65,7 +65,7 @@ class ExamController extends Controller
                     'tokens' => Str::random(5),
                 ]);
 
-                return $this->onSuccess($exam, 'Exam created');
+                return $this->onSuccess([$exam], 'Exam created');
             }
             return $this->onError(400, $validator->errors());
         }
@@ -85,7 +85,7 @@ class ExamController extends Controller
             if (!$data) {
                 return $this->onError(404, 'exam not found');
             }
-            return $this->onSuccess($data, 'exam found');
+            return $this->onSuccess([$data], 'exam found');
         }
         return $this->onError(401, 'Unauthorized');
     }
@@ -128,7 +128,7 @@ class ExamController extends Controller
                 $exam->start_time = $request->start_time;
                 $exam->end_time= $request->end_time;
                 $exam->update();
-                return $this->onSuccess($exam, 'Exam updated');
+                return $this->onSuccess([$exam], 'Exam updated');
             }
             return $this->onError(400, $validator->errors());
         }
@@ -148,7 +148,7 @@ class ExamController extends Controller
             $exam = Exam::find($id); // Find the id of the exam passed
             $exam->delete(); // Delete the specific exam data
             if (!empty($exam)) {
-                return $this->onSuccess($exam, 'exam Deleted');
+                return $this->onSuccess([$exam], 'exam Deleted');
             }
             return $this->onError(404, 'exam Not Found');
         }

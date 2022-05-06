@@ -25,7 +25,7 @@ class TeacherSubjectController extends Controller
     public function index()
     {
         $data = TeacherSubject::all();
-        return $this->onSuccess($data, 200);
+        return $this->onSuccess([$data], 200);
     }
 
     /**
@@ -55,7 +55,7 @@ class TeacherSubjectController extends Controller
                     'details' => $request->details,
                 ]);
 
-                return $this->onSuccess($subject, 'Subject created');
+                return $this->onSuccess([$subject], 'Subject created');
             }
             return $this->onError(400, $validator->errors());
         }
@@ -75,7 +75,7 @@ class TeacherSubjectController extends Controller
             if (!$data) {
                 return $this->onError(404, 'Subject not found');
             }
-            return $this->onSuccess($data, 'Subject found');
+            return $this->onSuccess([$data], 'Subject found');
         }
         return $this->onError(401, 'Unauthorized');
     }
@@ -107,7 +107,7 @@ class TeacherSubjectController extends Controller
                 $subject->subject_name = $request->subject_name;
                 $subject->detail = $request->detail;
                 $subject->update();
-                return $this->onSuccess($subject, 'User updated');
+                return $this->onSuccess([$subject], 'User updated');
             }
             return $this->onError(400, $validator->errors());
         }
@@ -127,7 +127,7 @@ class TeacherSubjectController extends Controller
             $subject = TeacherSubject::find($id); // Find the id of the subject passed
             $subject->delete(); // Delete the specific subject data
             if (!empty($subject)) {
-                return $this->onSuccess($subject, 'Subject Deleted');
+                return $this->onSuccess([$subject], 'Subject Deleted');
             }
             return $this->onError(404, 'User Not Found');
         }

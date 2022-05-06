@@ -63,13 +63,13 @@ class SubjectController extends Controller
         $session = $request->user();
         if ($session) {
             $validator = Validator::make($request->all(), $this->subjectValidatedRules());
-            if ($validator->passes()) {
+            if (!$validator->fails()) {
                 $subject =  Subject::create([
                     'subject_name' => $request->subject_name,
                     'details' => $request->details,
                 ]);
 
-                return $this->onSuccess($subject, 'Subject created');
+                return $this->onSuccess([$subject], 'Subject created');
             }
             return $this->onError(400, $validator->errors());
         }
@@ -89,7 +89,7 @@ class SubjectController extends Controller
             if (!$data) {
                 return $this->onError(404, 'Subject not found');
             }
-            return $this->onSuccess($data, 'Subject found');
+            return $this->onSuccess([$data], 'Subject found');
         }
         return $this->onError(401, 'Unauthorized');
     }
@@ -116,12 +116,12 @@ class SubjectController extends Controller
     {
         if (Auth::check()) {
             $validator = Validator::make($request->all(), $this->subjectValidatedRules());
-            if ($validator->passes()) {
+            if (!$validator->fails()) {
                 $subject =  Subject::findOrFail($id);
                 $subject->subject_name = $request->subject_name;
                 $subject->details = $request->details;
                 $subject->update();
-                return $this->onSuccess($subject, 'User updated');
+                return $this->onSuccess([$subject], 'User updated');
             }
             return $this->onError(400, $validator->errors());
         }
@@ -141,7 +141,7 @@ class SubjectController extends Controller
             $subject = Subject::find($id); // Find the id of the subject passed
             $subject->delete(); // Delete the specific subject data
             if (!empty($subject)) {
-                return $this->onSuccess($subject, 'Subject Deleted');
+                return $this->onSuccess([$subject], 'Subject Deleted');
             }
             return $this->onError(404, 'Subject Not Found');
         }

@@ -27,7 +27,7 @@ class QuestionController extends Controller
     public function index(Request $request)
     {
         $question = Question::with(['teachers', 'subjects'])->paginate($request->get('limit'));
-        return $this->onSuccess($question, 200);
+        return $this->onSuccess([$question], 200);
     }
 
     /**
@@ -78,7 +78,7 @@ class QuestionController extends Controller
                     'option_e'      => $request->option_e,
                     'correct_answer'=> $request->correct_answer,
                 ]);
-                return $this->onSuccess($question, 'Question created successfully', 201);
+                return $this->onSuccess([$question], 'Question created successfully', 201);
                 // dd($question);
             }
             return $this->onError(422, $validator->errors());
@@ -147,7 +147,7 @@ class QuestionController extends Controller
                 $data->option_d = $request->option_d;
                 $data->option_e = $request->option_e;
                 $data->update();
-                return $this->onSuccess($data, "Soal berhasil diperbaharui!", 200);
+                return $this->onSuccess([$data], "Soal berhasil diperbaharui!", 200);
                 }
             }
         }
@@ -191,7 +191,7 @@ class QuestionController extends Controller
                 ]);
             }
 
-            return $this->onSuccess($question, 'Pertanyaan Kognitif berhasil diperbaharui!', 200);
+            return $this->onSuccess([$question], 'Pertanyaan Kognitif berhasil diperbaharui!', 200);
         }
         return $this->onError(403, 'Anda tidak berhak memiliki akses ini!');
     }
@@ -209,7 +209,7 @@ class QuestionController extends Controller
             $question = Question::find($id); // Find the id of the question passed
             $question->delete(); // Delete the specific question data
             if (!empty($question)) {
-                return $this->onSuccess($question, 'User Deleted');
+                return $this->onSuccess([$question], 'User Deleted');
             }
             return $this->onError(404, 'User Not Found');
         }

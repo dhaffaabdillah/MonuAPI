@@ -20,7 +20,7 @@ class ExamPackagesController extends Controller
     {
         if (Auth::check()) {
             $data = ExamPackage::with(['questions', 'exams'])->paginate($request->limit);
-            return $this->onSuccess($data, 'Exam Package fetched', 200);
+            return $this->onSuccess([$data], 'Exam Package fetched', 200);
         }
         return $this->onError(401, 'Unauthorized');
     }
@@ -50,7 +50,7 @@ class ExamPackagesController extends Controller
                     'exam_id' => $request->exam_id,
                     'question_id' => $request->question_id,
                 ]);
-                return $this->onSuccess($data, 'Exam Package created successfully!', 201);
+                return $this->onSuccess([$data], 'Exam Package created successfully!', 201);
             }
             return $this->onError(400, $validate->errors()->all());
         }
@@ -70,7 +70,7 @@ class ExamPackagesController extends Controller
             if (!$data) {
                 return $this->onError(404,'Data not found!');
             }
-            return $this->onSuccess($data, 'Exam Package fetched', 200);
+            return $this->onSuccess([$data], 'Exam Package fetched', 200);
         }
          return $this->onError(401, 'Unauthorized');
     }
@@ -82,7 +82,7 @@ class ExamPackagesController extends Controller
             if (!$data) {
                 return $this->onError(404,'Data not found!');
             }
-            return $this->onSuccess($data, 'Exam Package fetched', 200);
+            return $this->onSuccess([$data], 'Exam Package fetched', 200);
         }
          return $this->onError(401, 'Unauthorized');
     }
@@ -115,7 +115,7 @@ class ExamPackagesController extends Controller
             $data->exam_id = $request->exam_id;
             $data->question_id = $request->question_id;
             $data->update();
-            return $this->onSuccess($data, 'Exam Package updated successfully!', 200);
+            return $this->onSuccess([$data], 'Exam Package updated successfully!', 200);
         }
     }
 
@@ -125,9 +125,18 @@ class ExamPackagesController extends Controller
      * @param  \App\Models\ExamPackage  $examPackage
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ExamPackage $examPackage)
+    public function destroy($id)
     {
-        //
+        $user = Auth::user();
+        if ($user->role == 3) {
+            $ExamPackage = ExamPackage::find($id); // Find the id of the ExamPackage passed
+            $ExamPackage->delete(); // Delete the specific ExamPackage data
+            if (!empty($ExamPackage)) {
+                return $this->onSuccess([$ExamPackage], 'ExamPackage Deleted');
+            }
+            return $this->onError(404, 'ExamPackage Not Found');
+        }
+        return $this->onError(401, 'Unauthorized Access');
     }
 
     public function search(Request $request)
