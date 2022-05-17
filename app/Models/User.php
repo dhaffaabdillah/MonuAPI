@@ -30,7 +30,7 @@ class User extends Authenticatable
         'class_number',
         'nis',
         'nik',
-        'profile_picture'
+        'profile_picture','gender'
     ];
 
     /**

@@ -15,6 +15,18 @@ trait apiHelper
         ], $code);
     }
 
+    protected function onSuccessJson($data, $message = [], int $code = 200)
+    {
+        return response()->json(
+            [
+                'success' => true,
+                'status' => $code,
+                'message' => $message,
+                'data' => $data
+            ], $code
+        );
+    }
+
     protected function onError(int $code, $message): JsonResponse
     {
         return response()->json([
@@ -107,6 +119,20 @@ trait apiHelper
             'correct_answer' =>  ['required', 'string'],
             'total_correct' =>  ['integer'],
             'total_wrong' =>  ['integer'],
+        ];
+    }
+
+    protected function answerQuestionValidatedRules(): array
+    {
+        return [
+            'exam_id'           => ['required', 'integer'],
+            'user_id'           => ['integer'],
+            'question_list_id'  => ['nullable'],
+            'answer_list'       => ['nullable'],
+            'total_correct'     => ['nullable'],
+            'scores'            => ['nullable'],
+            'start_at'          => ['nullable'],
+            'finished_at'       => ['nullable'],
         ];
     }
 }

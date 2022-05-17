@@ -27,7 +27,7 @@ class AuthController extends Controller
             'class_number' => 'string|required',
             'nik' => 'integer|required',
             'nis' => 'integer',
-            'nisn' => 'integer',
+            'nisn' => 'string',
             'password' => 'string|required|min:8|confirmed',
         ]);
 

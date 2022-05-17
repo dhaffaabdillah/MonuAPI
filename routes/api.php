@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\AnswerQuestionController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\ClassController;
 use App\Http\Controllers\API\ExamController;
@@ -10,7 +11,6 @@ use App\Http\Controllers\API\TeacherController;
 use App\Http\Controllers\API\TeacherSubjectController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Middleware\Role;
-use App\Models\ExamPackage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -60,7 +60,9 @@ Route::prefix('v1')->group(function() {
         Route::post('question/{id}', [QuestionController::class, 'update']);
         Route::apiResource('teacher-subject', TeacherSubjectController::class)->except('update');
         Route::patch('teacher-subject/{id}', [TeacherSubjectController::class, 'update']);
-        Route::apiResource('class', ClassController::class);
+        Route::get('exam/take-exam', [AnswerQuestionController::class, 'index']);
+        Route::post('exam/take-exam/{exam_id}', [AnswerQuestionController::class, 'saveAnswer']);
+        Route::apiResource('classes', ClassController::class);
         // logout function
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('logout-all', [AuthController::class, 'logoutAll'])->middleware('Admin');

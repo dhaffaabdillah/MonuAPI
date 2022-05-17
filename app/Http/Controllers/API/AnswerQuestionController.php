@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Library\apiHelper;
 use App\Models\Answer;
 use App\Models\Exam;
+use App\Models\ExamPackage;
 use App\Models\Question;
 use App\Models\TakeExam;
+use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,9 +24,14 @@ class AnswerQuestionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
-        //
+        if (Auth::check()) {
+            $data = Answer::paginate($request->get('limit'));
+            return $this->onSuccessJson($data, "Answer fetched.", 200);
+            // dd($data);
+        }
+        return $this->onError(401, 'Login terlebih dahulu!');
     }
 
     /**
@@ -43,19 +51,60 @@ class AnswerQuestionController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function saveAnswer(Request $request, $exam_id, $user_id)
+    public function saveAnswer(Request $request, $exam_id)
     {
-        if (Auth::check() && Auth::user()->role == 1) {
+
+        // dd(request()->get('question_list_id'));
+        if (Auth::check()) {
             $validator = Validator::make($request->all(), $this->answerQuestionValidatedRules());
             if (!$validator->fails()) {
-                $getQuestion = Question::where([['exam_id', '=', $exam_id]])->get();
-                foreach ($getQuestion as $key => $value) {
-                    $data = Question::create([
-                        'exam_id' => $exam_id
-                    ]);
-                }
+
+                $dataQ = [];
+                $getQuestion = ExamPackage::select('question_id', 'correct_answer')
+                            ->leftJoin('questions_cognitive', 'question_id', '=', 'questions_cognitive.id')
+                            ->where([['exam_id', '=', $exam_id]])->orderBy('question','ASC')->get();
+                // $getCorrectAnswer = ExamPackage::select('correct_answer')->leftJoin('questions_cognitive', 'question_id', '=', 'id')->order->get();
+                $encodedAnswer = json_encode($request->question_list_id);
+                $decodedAnswer = json_decode(json_encode($request->question_list_id), true);
+                $a = (array) $encodedAnswer[0];
+                $answer = new Answer;
+                $answer->exam_id = $exam_id;
+                $answer->user_id = Auth::user()->id;
+                // $answer->question_list_id = $request->question_list_id[0]['answer'];
+                $answer->question_list_id = $decodedAnswer[0]['answer'];
+                $answer->start_at = Carbon::now();
+                $answer->scores = 
+                $answer->save();
+
+                // foreach($request->question_list_id as $q_i){
+                //     // DB::query("INSERT INTO list_question_coba VALUES (NULL, ".$exam_id.", ".$q_i->question_id.", ".$q_i->answer.")");
+                //     // dd($q_i['answer'], "kdwkdkwendkwe");
+                //     $answer = new Answer;
+                //     $answer->exam_id = $exam_id;
+                //     $answer->user_id = Auth::user()->id;
+                //     $answer->question_list_id = $q_i[0];
+                //     $answer->start_at = Carbon::now();
+                //     $answer->save();
+                // }
+                // dd($answer);
+                // dd($answer);
+                // $answer = Answer::create([
+                //     'exam_id' => $request->exam_id,
+                //     'user_id' => Auth::user()->id,
+                //     'question_list_id' => $getQuestion,
+                //     'start_at' => Carbon::now(),
+                    
+                // ]);
+
+                
+                // foreach ($getQuestion as $key => $value) {
+                    
+                // }
+                // return $this->onSuccess($answer, 'Data berhasil disubmit', 201);
             }
+            return $this->onError(400, $validator->errors());
         }
+        return $this->onError(401, 'Unauthorized'); 
     }
 
     public function storeTemporary(Request $request)
