@@ -48,11 +48,11 @@ class TakeQuestionMoodContoller extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $exam_id)
+    public function store(Request $request, $take_exam_id)
     {
         $data = TakeQuestionMood::create([
             'user_id' => Auth::user()->id,
-            'exam_id' => $exam_id,
+            'take_exam_id' => $take_exam_id,
             'answer_option' => $request->answer_option,
             'answer_detail' => $request->answer_detail,
         ]);

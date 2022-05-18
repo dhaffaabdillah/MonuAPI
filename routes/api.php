@@ -69,6 +69,9 @@ Route::prefix('v1')->group(function() {
         Route::post('logout-all', [AuthController::class, 'logoutAll'])->middleware('Admin');
         Route::apiResource('question-mood', QuestionMoodController::class)->except('update');
         Route::post('question-mood/{id}', [QuestionMoodController::class, 'update']);
+        Route::get('take-question-mood/results', [QuestionMoodController::class, 'index']);
+        Route::get('take-question-mood/{take_exam_id}', [QuestionMoodController::class, 'store']);
+
         // for pagination or searching
         Route::get('/user{user?}', [UserController::class,'index']);
         Route::get('/search-user{user?}', [UserController::class, 'search']);
