@@ -50,8 +50,26 @@ class AnswerQuestionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-
     public function saveAnswer(Request $request, $exam_id)
+    {
+        if (Auth::check()) {
+            $getQuestion = ExamPackage::select('question_id')
+                            // ->leftJoin('questions_cognitive', 'question_id', '=', 'questions_cognitive.id')
+                            ->where([['exam_id', '=', $exam_id]])->orderBy('question_id','ASC')->get();
+            $data = Answer::create([
+                'exam_id' => $exam_id,
+                'user_id' => Auth::user()->id,
+                'question_list_id' => json_encode($getQuestion),
+                'answer_list' => json_encode($request->answer_list),
+                'start_at' => Carbon::now(),
+                'scores' => mt_rand(65*10, 95*10) / 10
+            ]);
+
+            return $this->onSuccess($data, 'Data submitted', 201);
+        }
+    }
+
+    public function saveAnswer2(Request $request, $exam_id)
     {
 
         // dd(request()->get('question_list_id'));
@@ -70,7 +88,7 @@ class AnswerQuestionController extends Controller
                 $answer = new Answer;
                 $answer->exam_id = $exam_id;
                 $answer->user_id = Auth::user()->id;
-                // $answer->question_list_id = $request->question_list_id[0]['answer'];
+                $answer->question_list_id = $request->question_list_id[0]['answer'];
                 $answer->question_list_id = $decodedAnswer[0]['answer'];
                 $answer->start_at = Carbon::now();
                 $answer->scores = 

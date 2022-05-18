@@ -6,6 +6,7 @@ use App\Http\Controllers\API\ClassController;
 use App\Http\Controllers\API\ExamController;
 use App\Http\Controllers\API\ExamPackagesController;
 use App\Http\Controllers\API\QuestionController;
+use App\Http\Controllers\API\QuestionMoodController;
 use App\Http\Controllers\API\SubjectController;
 use App\Http\Controllers\API\TeacherController;
 use App\Http\Controllers\API\TeacherSubjectController;
@@ -66,7 +67,8 @@ Route::prefix('v1')->group(function() {
         // logout function
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('logout-all', [AuthController::class, 'logoutAll'])->middleware('Admin');
-
+        Route::apiResource('question-mood', QuestionMoodController::class)->except('update');
+        Route::post('question-mood/{id}', [QuestionMoodController::class, 'update']);
         // for pagination or searching
         Route::get('/user{user?}', [UserController::class,'index']);
         Route::get('/search-user{user?}', [UserController::class, 'search']);

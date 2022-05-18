@@ -52,7 +52,7 @@ class AuthController extends Controller
                 'nisn' => $request->nisn,
                 'gender' => $request->gender,
             ]);
-            return response()->json(['msg' => 'Registration successful!', 'response' => $user], 200);
+            return response()->json(['msg' => 'Registration successful!', 'response' => [$user]], 200);
         }
     }
 

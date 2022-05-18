@@ -70,7 +70,7 @@ class ExamPackagesController extends Controller
             if (!$data) {
                 return $this->onError(404,'Data not found!');
             }
-            return $this->onSuccess([$data], 'Exam Package fetched', 200);
+            return $this->onSuccess($data, 'Exam Package fetched', 200);
         }
          return $this->onError(401, 'Unauthorized');
     }
@@ -82,7 +82,7 @@ class ExamPackagesController extends Controller
             if (!$data) {
                 return $this->onError(404,'Data not found!');
             }
-            return $this->onSuccess([$data], 'Exam Package fetched', 200);
+            return $this->onSuccess($data, 'Exam Package fetched', 200);
         }
          return $this->onError(401, 'Unauthorized');
     }
