@@ -50,7 +50,7 @@ class AnswerQuestionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function saveAnswer(Request $request, $exam_id)
+    public function saveAnswer2(Request $request, $exam_id)
     {
         if (Auth::check()) {
             $getQuestion = ExamPackage::select('question_id')
@@ -69,7 +69,7 @@ class AnswerQuestionController extends Controller
         }
     }
 
-    public function saveAnswer2(Request $request, $exam_id)
+    public function saveAnswer1(Request $request, $exam_id)
     {
 
         // dd(request()->get('question_list_id'));
@@ -89,6 +89,9 @@ class AnswerQuestionController extends Controller
                 $answer->exam_id = $exam_id;
                 $answer->user_id = Auth::user()->id;
                 $answer->question_list_id = $request->question_list_id[0]['answer'];
+                foreach ($request->answer_list as $key ) {
+                    $answer->answer_list = $key['answer_list'];
+                }
                 $answer->question_list_id = $decodedAnswer[0]['answer'];
                 $answer->start_at = Carbon::now();
                 $answer->scores = 
@@ -125,11 +128,11 @@ class AnswerQuestionController extends Controller
         return $this->onError(401, 'Unauthorized'); 
     }
 
-    public function storeTemporary(Request $request)
+    public function saveAnswer(Request $request, $exam_id)
     {
         $id_user = Auth::user()->id;
-        if (Auth::check() && Auth::user()->roles == 1) {
-            if ($request->tokens == Exam::select('tokens')) {
+        // if (Auth::check() && Auth::user()->roles == 1) {
+            // if ($request->tokens == Exam::select('tokens')) {
                 $update_ = "";
                 $queue = json_decode(file_get_contents('php://input'));
                 for ($a=0; $a < $queue->totalQuestion; $a++) { 
@@ -140,9 +143,9 @@ class AnswerQuestionController extends Controller
                     $update_	   .= "".$queue->$_t_question_id.":".$answer_.":".$queue->$_doubt.",";
                 }
                 $update_ = substr($update_, 0, -1);
-                DB::raw("UPDATE take_exams SET answer_list = '".$update_."' WHERE test_id = '$request->test_id' AND user_id = '".Auth::user()->id."'");
+                DB::raw("UPDATE take_exams SET answer_list = '".$update_."' WHERE exam_id = '$exam_id' AND user_id = '".Auth::user()->id."'");
 
-                $questionReturn = TakeExam::select('answer_list')->where('test_id', $request->test_id)->where('user_id', Auth::user()->id);
+                $questionReturn = TakeExam::select('answer_list')->where('exam_id', $exam_id)->where('user_id', Auth::user()->id);
                 $dataReturn = $questionReturn->row_array();
                 $return = explode(":", $dataReturn['answer_list']);
                 $results = array();
@@ -153,10 +156,10 @@ class AnswerQuestionController extends Controller
 				    $results[]   = $val;
                 }
                 return $this->onSuccess($results, 'Berhasil disimpan sementara', 200);
-            }
-            return $this->onError(400, 'Token yang kamu masukkan salah!');
-        }
-        return $this->onError(403, 'Anda tidak berhak masuk ke fitur ini');
+            // }
+            // return $this->onError(400, 'Token yang kamu masukkan salah!');
+        // }
+        // return $this->onError(403, 'Anda tidak berhak masuk ke fitur ini');
     }
 
     /**

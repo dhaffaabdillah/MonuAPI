@@ -7,6 +7,7 @@ use App\Http\Library\apiHelper;
 use App\Models\ExamPackage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 class ExamPackagesController extends Controller
 {
@@ -79,6 +80,7 @@ class ExamPackagesController extends Controller
     {
         if(Auth::check()){
             $data = ExamPackage::with(['questions'])->where([['exam_id', '=', $exam_id]])->get();
+            // $data = DB::table('exam_package')->select('exams.exam_name', 'questions_cognitive.question')->leftJoin('questions_cognitive', 'questions_cognitive.id', '=', 'exam_package.question_id')->leftJoin('exams', 'exams.id', '=', 'exam_package.exam_id')->where([['exam_id', '=', $exam_id]])->get();
             if (!$data) {
                 return $this->onError(404,'Data not found!');
             }

@@ -70,7 +70,7 @@ Route::prefix('v1')->group(function() {
         Route::apiResource('question-mood', QuestionMoodController::class)->except('update');
         Route::post('question-mood/{id}', [QuestionMoodController::class, 'update']);
         Route::get('take-question-mood/results', [QuestionMoodController::class, 'index']);
-        Route::get('take-question-mood/{take_exam_id}', [QuestionMoodController::class, 'store']);
+        Route::post('take-question-mood/{take_exam_id}', [QuestionMoodController::class, 'store']);
 
         // for pagination or searching
         Route::get('/user{user?}', [UserController::class,'index']);

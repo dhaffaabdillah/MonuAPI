@@ -22,7 +22,9 @@ trait apiHelper
                 'success' => true,
                 'status' => $code,
                 'message' => $message,
-                'data' => $data
+                'data' => [
+                    'exam'  => $data
+                ]
             ], $code
         );
     }
