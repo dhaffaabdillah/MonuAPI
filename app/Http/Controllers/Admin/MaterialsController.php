@@ -15,7 +15,8 @@ class MaterialsController extends Controller
      */
     public function index()
     {
-        //
+        $data = Material::all();
+        return view('admin.material.index', compact('data'));
     }
 
     /**

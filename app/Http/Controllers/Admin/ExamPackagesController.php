@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Library\apiHelper;
+use App\Models\Exam;
 use App\Models\ExamPackage;
+use App\Models\Question;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -20,8 +22,9 @@ class ExamPackagesController extends Controller
     public function index(Request $request)
     {
         if (Auth::check()) {
-            $data = ExamPackage::with(['questions', 'exams'])->paginate($request->limit);
-            return $this->onSuccess([$data], 'Exam Package fetched', 200);
+            // $data = ExamPackage::with(['questions', 'exams']);
+            $data = ExamPackage::all();
+            return view('admin.exam-package.index', compact('data'));
         }
         return $this->onError(401, 'Unauthorized');
     }
@@ -33,7 +36,9 @@ class ExamPackagesController extends Controller
      */
     public function create()
     {
-        //
+        $question = Question::all();
+        $exam = Exam::all();
+        return view('admin.exam-package.create', compact('question', 'exam'));
     }
 
     /**
@@ -44,18 +49,19 @@ class ExamPackagesController extends Controller
      */
     public function store(Request $request)
     {
-        if (in_array(Auth::user()->role, [2, 3])) {
+        // if (in_array(Auth::user()->role, [2, 3])) {
             $validate = Validator::make($request->all(), $this->examPackagesValidatedRules());
             if (!$validate->fails()) {
                 $data = ExamPackage::create([
                     'exam_id' => $request->exam_id,
                     'question_id' => $request->question_id,
                 ]);
-                return $this->onSuccess([$data], 'Exam Package created successfully!', 201);
+                // return $this->onSuccess([$data], 'Exam Package created successfully!', 201);
+                return redirect()->route('ep-index');
             }
             return $this->onError(400, $validate->errors()->all());
-        }
-        return $this->onError(403, 'Your role doesnt support');
+        // }
+        // return $this->onError(403, 'Your role doesnt support');
     }
 
     /**
@@ -95,9 +101,19 @@ class ExamPackagesController extends Controller
      * @param  \App\Models\ExamPackage  $examPackage
      * @return \Illuminate\Http\Response
      */
-    public function edit(ExamPackage $examPackage)
+    public function edit($id)
     {
-        //
+        if(Auth::check()){
+            $data = ExamPackage::findOrFail($id);
+            $question = Question::all();
+            $exam = Exam::all();
+            if (!$data) {
+                return $this->onError(404,'Data not found!');
+            }
+            // return $this->onSuccess($data, 'Exam Package fetched', 200);
+            return view('admin.exam-package.edit', compact('data', 'question', 'exam'));
+        }
+         return $this->onError(401, 'Unauthorized');
     }
 
     /**
@@ -110,14 +126,15 @@ class ExamPackagesController extends Controller
     public function update(Request $request, $id)
     {
         if (Auth::check()) {
-            $data = ExamPackage::findOrFail($id)->with(['exams', 'questions']);
+            $data = ExamPackage::findOrFail($id);
             if (!$data) {
                 return $this->onError(404,'Data not found!');
             }
             $data->exam_id = $request->exam_id;
             $data->question_id = $request->question_id;
             $data->update();
-            return $this->onSuccess([$data], 'Exam Package updated successfully!', 200);
+            return redirect()->route('ep-index');
+            // return $this->onSuccess([$data], 'Exam Package updated successfully!', 200);
         }
     }
 

@@ -27,8 +27,9 @@ class QuestionMoodController extends Controller
      */
     public function index(Request $request)
     {
-        $question = QuestionMood::all();
-        return $this->onSuccess([$question], 200);
+        $question = Question::where([['question_type', '=', 'mood']])->get();
+        // return $this->onSuccess([$question], 200);
+        return view('admin.questions-mood.index', compact('question'));
     }
 
     /**
@@ -49,14 +50,16 @@ class QuestionMoodController extends Controller
      */
     public function store(Request $request)
     {
-        $data = QuestionMood::create([
+        $data = Question::create([
             'question' => $request->question,
-            'option_a' => "😁",
-            'option_b' => "😑",
-            'option_c' => "😥",
+            'question_type' => "mood",
+            'option_a' => "https://cdn.pixabay.com/photo/2020/12/27/20/24/smile-5865208_640.png",
+            'option_b' => "https://freepngimg.com/download/icon/1000092-expressionless-face-emoji-free-icon.png",
+            'option_c' => "https://www.clipartmax.com/png/middle/64-644516_very-sad-emoji-sad-emoji.png",
         ]);
 
-        return $this->onSuccess($data, "Data Submitted", 201);
+        return redirect()->route('qm-index');
+        // return $this->onSuccess($data, "Data Submitted", 201);
     }
 
     /**k
@@ -67,8 +70,9 @@ class QuestionMoodController extends Controller
      */
     public function show($id)
     {
-        $data = QuestionMood::find($id);
-        return $this->onSuccess($data, 'Data fetched', 200);
+        $data = Question::where([['question_type', '=', 'mood']])->findOrFail($id);
+        // return $this->onSuccess($data, 'Data fetched', 200);
+        return view('admin.questions-mood.edit', compact('data'));
     }
 
     /**
@@ -77,9 +81,11 @@ class QuestionMoodController extends Controller
      * @param  \App\Models\Question  $question
      * @return \Illuminate\Http\Response
      */
-    public function edit(Question $question)
+    public function edit($id)
     {
-        //
+        $data = Question::where([['question_type', '=', 'mood']])->findOrFail($id);
+        // return $this->onSuccess($data, 'Data fetched', 200);
+        return view('admin.questions-mood.edit', compact('data'));
     }
 
     /**
@@ -91,10 +97,14 @@ class QuestionMoodController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = QuestionMood::findOrFail($id);
+        $data = Question::where([['question_type', '=', 'mood']])->findOrFail($id);
         $data->question = $request->question;
+        $data->option_a = "https://cdn.pixabay.com/photo/2020/12/27/20/24/smile-5865208_640.png";
+        $data->option_b = "https://freepngimg.com/download/icon/1000092-expressionless-face-emoji-free-icon.png";
+        $data->option_c = "https://www.clipartmax.com/png/middle/64-644516_very-sad-emoji-sad-emoji.png";
         $data->update();
-        return $this->onSuccess($data, "Data Updated", 200);
+        // return $this->onSuccess($data, "Data Updated", 200);
+        return redirect()->route('qm-index');
     }
 
     /**
@@ -107,10 +117,11 @@ class QuestionMoodController extends Controller
     {
         $user = Auth::user();
         if ($user->role == 3) {
-            $QuestionMood = QuestionMood::find($id); // Find the id of the QuestionMood passed
+            $QuestionMood = Question::where([['question_type', '=', 'mood']])->find($id); // Find the id of the QuestionMood passed
             $QuestionMood->delete(); // Delete the specific QuestionMood data
             if (!empty($QuestionMood)) {
-                return $this->onSuccess([$QuestionMood], 'User Deleted');
+                // return $this->onSuccess([$QuestionMood], 'User Deleted');
+                return redirect()->back();
             }
             return $this->onError(404, 'User Not Found');
         }

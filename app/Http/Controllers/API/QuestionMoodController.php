@@ -27,8 +27,8 @@ class QuestionMoodController extends Controller
      */
     public function index(Request $request)
     {
-        $question = QuestionMood::all();
-        return $this->onSuccess([$question], 200);
+        $question = Question::where([['question_type', '=', 'mood']])->all();
+        // return $this->onSuccess([$question], 200);
     }
 
     /**
@@ -49,8 +49,9 @@ class QuestionMoodController extends Controller
      */
     public function store(Request $request)
     {
-        $data = QuestionMood::create([
+        $data = Question::create([
             'question' => $request->question,
+            'question_type' => 'mood',
             'option_a' => "😁",
             'option_b' => "😑",
             'option_c' => "😥",
@@ -67,7 +68,7 @@ class QuestionMoodController extends Controller
      */
     public function show($id)
     {
-        $data = QuestionMood::find($id);
+        $data = Question::where([['question_type', '=', 'mood']])->find($id);
         return $this->onSuccess($data, 'Data fetched', 200);
     }
 
@@ -91,7 +92,7 @@ class QuestionMoodController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = QuestionMood::findOrFail($id);
+        $data = Question::where([['question_type', '=', 'mood']])->findOrFail($id);
         $data->question = $request->question;
         $data->update();
         return $this->onSuccess($data, "Data Updated", 200);
@@ -107,7 +108,7 @@ class QuestionMoodController extends Controller
     {
         $user = Auth::user();
         if ($user->role == 3) {
-            $QuestionMood = QuestionMood::find($id); // Find the id of the QuestionMood passed
+            $QuestionMood = Question::where([['question_type', '=', 'mood']])->find($id); // Find the id of the QuestionMood passed
             $QuestionMood->delete(); // Delete the specific QuestionMood data
             if (!empty($QuestionMood)) {
                 return $this->onSuccess([$QuestionMood], 'User Deleted');

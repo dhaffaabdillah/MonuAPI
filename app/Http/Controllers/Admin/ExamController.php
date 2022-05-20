@@ -7,6 +7,7 @@ use App\Http\Library\apiHelper;
 use App\Models\Exam;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -21,12 +22,14 @@ class ExamController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum');
-        $this->middleware('Admin')->except('');
+        // $this->middleware('Admin')->except('');
     }
     public function index(Request $request)
     {
-        $data = Exam::paginate($request->get('limit'));
-        return $this->onSuccess([$data], 200);
+        $teacher = DB::raw('SELECT user_id FROM teachers JOIN users ON users.id = teachers.user_id WHERE teachers.user_id', Auth::user()->id);
+        // $data = Exam::where('teacher_id', $teacher)->get();
+        $data = Exam::all();
+        return view('admin.exam.index', compact('data'));
     }
 
     /**
@@ -36,7 +39,7 @@ class ExamController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.exam.create',compact('data'));
     }
 
     /**
@@ -64,8 +67,7 @@ class ExamController extends Controller
                     'end_time' => $request->end_time, // in timestamos 
                     'tokens' => Str::random(5),
                 ]);
-
-                return $this->onSuccess([$exam], 'Exam created');
+                return redirect()->url('/');
             }
             return $this->onError(400, $validator->errors());
         }
@@ -98,7 +100,7 @@ class ExamController extends Controller
      */
     public function edit($id)
     {
-        //
+        return view('admin.exam-package.edit');
     }
 
     /**
@@ -128,7 +130,8 @@ class ExamController extends Controller
                 $exam->start_time = $request->start_time;
                 $exam->end_time= $request->end_time;
                 $exam->update();
-                return $this->onSuccess([$exam], 'Exam updated');
+                return redirect()->route('e-index');
+                // return $this->onSuccess([$exam], 'Exam updated');
             }
             return $this->onError(400, $validator->errors());
         }
@@ -144,14 +147,9 @@ class ExamController extends Controller
     public function destroy($id)
     {
         $user = Auth::user();
-        if ($user->role == 3) {
+        // if ($user->role == 3) {
             $exam = Exam::find($id); // Find the id of the exam passed
-            $exam->delete(); // Delete the specific exam data
-            if (!empty($exam)) {
-                return $this->onSuccess([$exam], 'exam Deleted');
-            }
-            return $this->onError(404, 'exam Not Found');
-        }
-        return $this->onError(401, 'Unauthorized Access');
+            $exam->delete();
+            return redirect()->route('e-index');
     }
 }

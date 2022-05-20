@@ -26,8 +26,9 @@ class QuestionController extends Controller
      */
     public function index(Request $request)
     {
-        $question = Question::with(['teachers', 'subjects'])->paginate($request->get('limit'));
-        return $this->onSuccess([$question], 200);
+        $data = Question::with(['teachers', 'subjects'])->paginate($request->get('limit'));
+        // return $this->onSuccess([$question], 200);
+        return view('admin.questions-mood.index', compact('data'));
     }
 
     /**

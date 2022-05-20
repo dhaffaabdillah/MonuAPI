@@ -1,4 +1,5 @@
-@extends('layouts.admin')
+{{-- @extends('layouts.admin') --}}
+{{-- @section('sidebar') --}}
 <div class="sidebar-inner slimscrollleft">
 
     <div id="sidebar-menu">
@@ -119,3 +120,4 @@
     </div>
     <div class="clearfix"></div>
 </div>
+{{-- @endsection --}}

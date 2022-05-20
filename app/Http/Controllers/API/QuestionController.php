@@ -28,6 +28,8 @@ class QuestionController extends Controller
     {
         $question = Question::with(['teachers', 'subjects'])->paginate($request->get('limit'));
         return $this->onSuccess([$question], 200);
+        // return view('admin.questions-mood.index');
+        
     }
 
     /**
@@ -71,6 +73,7 @@ class QuestionController extends Controller
                     'file_type'     => !$request->hasFile('file') ? NULL : $file->getClientMimeType(),
                     'file'          => !$request->hasFile('file') ? NULL : $file->hashName(),
                     'question'      => $request->question,
+                    'question_type' => 'cognitive',
                     'option_a'      => $request->option_a,
                     'option_b'      => $request->option_b,
                     'option_c'      => $request->option_c,
@@ -119,7 +122,7 @@ class QuestionController extends Controller
     {
         $role = Auth::user()->role;
         $file =  $request->file('files');
-        if (in_array($role, [2, 3])) {
+        // if (in_array($role, [2, 3])) {
             $validator = Validator::make($request->all(), $this->questionValidatedRules());
             if ($validator->fails()) {
                return $this->onError(400, $validator->errors());
@@ -129,6 +132,7 @@ class QuestionController extends Controller
                 $data->teacher_id = $request->teacher_id;
                 // $data->bobot = $request->bobot;
                 $data->question = $request->question;
+                $data->question_type = $request->question_type;
                 if($request->hasFile('files')) {
                     // $file_name = time()."_".Carbon::now()->format('d-M-Y')."_"."Subject:$request->subject_id".$file->getClientOriginalName();
                     // if($user->profile_picture != $file_name){
@@ -149,7 +153,7 @@ class QuestionController extends Controller
                 $data->update();
                 return $this->onSuccess([$data], "Soal berhasil diperbaharui!", 200);
                 }
-            }
+            // }
         }
         return $this->onError(403, 'Access forbidden');
     }
